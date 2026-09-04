@@ -87,7 +87,10 @@
 
     fetch(WEBHOOK_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+  'Content-Type': 'application/json',
+  'X-API-KEY': 'BOK2_Secret_Token_2026_x99'
+},
       body: JSON.stringify(payload)
     }).catch(err => console.error('Error enviando al webhook:', err));
 
