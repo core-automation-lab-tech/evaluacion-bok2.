@@ -5,47 +5,106 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Evaluación de Servicio - BOK2</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; color: #333; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.5rem;
+    }
+    .card {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+    h2 { font-size: 1.5rem; color: #f0f6fc; margin-bottom: 0.5rem; font-weight: 600; }
+    p.subtitle { font-size: 0.95rem; color: #8b949e; margin-bottom: 1.5rem; }
     .hidden { display: none; }
-    .stars { display: flex; gap: 12px; font-size: 2.5rem; cursor: pointer; margin: 1.5rem 0; justify-content: center; }
-    .star { color: #d1d5db; transition: color 0.15s ease-in-out; }
-    .star:hover, .star.active { color: #f59e0b; }
-    .btn { background: #0056b3; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: 600; }
-    .escape-link { margin-top: 1.5rem; text-align: center; font-size: 0.9rem; }
-    .escape-link a { color: #d93025; font-weight: bold; text-decoration: underline; }
-    .legal-notice { font-size: 0.75rem; color: #666; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem; text-align: justify; }
+    .stars { display: flex; gap: 12px; font-size: 2.8rem; cursor: pointer; justify-content: center; margin: 1rem 0 2rem 0; }
+    .star { color: #30363d; transition: transform 0.15s ease, color 0.15s ease; user-select: none; }
+    .star:hover, .star.active { color: #f59e0b; transform: scale(1.15); }
+    textarea {
+      width: 100%;
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      color: #f0f6fc;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      resize: vertical;
+      margin-bottom: 1rem;
+      outline: none;
+    }
+    textarea:focus { border-color: #58a6ff; }
+    .btn {
+      background-color: #238636;
+      color: #ffffff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+    .btn:hover { background-color: #2ea043; }
+    .escape-link { margin-top: 1.5rem; font-size: 0.85rem; }
+    .escape-link a { color: #58a6ff; text-decoration: underline; font-weight: 500; }
+    .legal-notice {
+      font-size: 0.72rem;
+      color: #6e7681;
+      margin-top: 2rem;
+      border-top: 1px solid #21262d;
+      padding-top: 1rem;
+      text-align: justify;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
 
-  <div id="rating-step" style="text-align: center;">
-    <h2>Evalúa tu experiencia</h2>
-    <p>¿Cómo calificarías tu atención hoy?</p>
-    <div class="stars" id="star-container">
-      <span class="star" data-value="1">★</span>
-      <span class="star" data-value="2">★</span>
-      <span class="star" data-value="3">★</span>
-      <span class="star" data-value="4">★</span>
-      <span class="star" data-value="5">★</span>
-    </div>
-  </div>
-
-  <!-- Formulario interno para 1-3 estrellas -->
-  <div id="internal-form" class="hidden">
-    <h3>Queremos mejorar nuestro servicio</h3>
-    <form id="feedback-form">
-      <textarea id="review_text" rows="4" style="width:100%; box-sizing: border-box; padding: 10px;" placeholder="Por favor, cuéntanos qué sucedió..." required></textarea>
-      <button type="submit" class="btn" style="margin-top: 10px;">Enviar Comentario Interno</button>
-    </form>
-
-    <!-- DIRECTIVA 2: Vía de Escape Pública (Anti-Review Gating) -->
-    <div class="escape-link">
-      <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
-        ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
-      </a>
+  <div class="card">
+    <!-- Paso 1: Selección de estrellas -->
+    <div id="rating-step">
+      <h2>Evalúa tu experiencia</h2>
+      <p class="subtitle">¿Cómo calificarías tu atención hoy?</p>
+      <div class="stars" id="star-container">
+        <span class="star" data-value="1">★</span>
+        <span class="star" data-value="2">★</span>
+        <span class="star" data-value="3">★</span>
+        <span class="star" data-value="4">★</span>
+        <span class="star" data-value="5">★</span>
+      </div>
     </div>
 
-    <!-- DIRECTIVA 3: Bloque Legal Estricto RGPD -->
+    <!-- Paso 2: Formulario interno para 1-3 estrellas -->
+    <div id="internal-form" class="hidden">
+      <h2>Queremos mejorar</h2>
+      <p class="subtitle">Cuéntanos qué sucedió para corregirlo de inmediato.</p>
+      <form id="feedback-form">
+        <textarea id="review_text" rows="4" placeholder="Escribe tu comentario aquí..." required></textarea>
+        <button type="submit" class="btn">Enviar Comentario Interno</button>
+      </form>
+
+      <!-- Vía de Escape Pública (Anti-Review Gating / Cumplimiento de Políticas) -->
+      <div class="escape-link">
+        <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
+          ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
+        </a>
+      </div>
+    </div>
+
+    <!-- Cláusula de Protección de Datos RGPD (Primera Capa) -->
     <div class="legal-notice">
       <strong>Protección de Datos:</strong> Esta encuesta es 100% anónima. La información recopilada se utiliza exclusivamente para el control interno de calidad del servicio. No se almacenan ni procesan datos de carácter personal.
     </div>
@@ -55,7 +114,8 @@
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      google_review_url: "https://search.google.com/local/writereview?ludocid=18251169604274387178",
+      // URL directa con el Place ID oficial extraído para BOK2
+      google_review_url: "https://search.google.com/local/writereview?placeid=ChIJ4RgoNAmZpBIR6nguZg4uSf0",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
@@ -68,10 +128,10 @@
         selectedRating = parseInt(e.target.dataset.value);
 
         if (selectedRating >= 4) {
-          // 4 y 5 estrellas: Redirección inmediata al pop-up oficial de reseña de BOK2
+          // Redirección directa sin fricción a la ventana de reseña en Google Maps
           window.location.href = CONFIG.google_review_url;
         } else {
-          // 1 a 3 estrellas: Muestra el formulario interno
+          // Muestra el formulario de feedback interno
           document.getElementById('rating-step').classList.add('hidden');
           document.getElementById('internal-form').classList.remove('hidden');
         }
@@ -96,7 +156,7 @@
         })
       });
 
-      alert('Gracias por sus comentarios. Nos ayudan a mejorar.');
+      alert('Gracias por tus comentarios. Nos ayudan a mejorar.');
       location.reload();
     });
   </script>
