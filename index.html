@@ -3,102 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evaluación de Experiencia - Restaurante BOK2</title>
+  <title>Evaluación de Servicio</title>
   <style>
-    :root { --primary: #c8963e; --bg: #0f1115; --card: #181b20; --text: #f3f4f6; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
-    .card { background: var(--card); padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    h2 { margin-top: 0; font-size: 1.4rem; }
-    p { color: #9ca3af; font-size: 0.95rem; }
-    .stars { display: flex; justify-content: center; gap: 10px; margin: 25px 0; }
-    .star { font-size: 2.2rem; cursor: pointer; color: #4b5563; transition: transform 0.1s, color 0.2s; }
-    .star.active { color: var(--primary); }
-    textarea { width: 100%; height: 100px; background: #23272f; border: 1px solid #374151; border-radius: 8px; color: #fff; padding: 12px; box-sizing: border-box; resize: none; margin-bottom: 15px; font-size: 0.95rem; }
-    button { background: var(--primary); color: #000; font-weight: bold; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 1rem; }
-    .legal-disclaimer { font-size: 0.72rem; color: #6b7280; margin-top: 20px; line-height: 1.3; text-align: justify; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; color: #333; }
     .hidden { display: none; }
+    .stars { display: flex; gap: 8px; font-size: 2rem; cursor: pointer; margin: 1rem 0; }
+    .btn { background: #0056b3; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 1rem; }
+    .escape-link { margin-top: 1.5rem; text-align: center; font-size: 0.9rem; }
+    .escape-link a { color: #d93025; font-weight: bold; text-decoration: underline; }
+    .legal-notice { font-size: 0.75rem; color: #666; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem; text-align: justify; }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>¿Cómo fue tu experiencia hoy?</h2>
-  <p>Tu opinión nos ayuda a mejorar cada detalle.</p>
-  
-  <div class="stars" id="starContainer">
-    <span class="star" data-value="1">★</span>
-    <span class="star" data-value="2">★</span>
-    <span class="star" data-value="3">★</span>
-    <span class="star" data-value="4">★</span>
-    <span class="star" data-value="5">★</span>
+  <h2>Evalúa tu experiencia</h2>
+  <div id="rating-step">
+    <p>¿Cómo calificarías tu atención hoy?</p>
+    <div class="stars" id="star-container">
+      <span data-value="1">★</span>
+      <span data-value="2">★</span>
+      <span data-value="3">★</span>
+      <span data-value="4">★</span>
+      <span data-value="5">★</span>
+    </div>
   </div>
 
-  <div id="feedbackForm" class="hidden">
-    <p>Lamentamos no haber cumplido tus expectativas. Cuéntanos qué sucedió para solucionarlo de inmediato:</p>
-    <textarea id="comments" placeholder="Escribe tus comentarios aquí..."></textarea>
-    <button id="sendBtn">Enviar Comentarios a Gerencia</button>
+  <!-- Formulario interno para 1-3 estrellas -->
+  <div id="internal-form" class="hidden">
+    <h3>Queremos mejorar nuestro servicio</h3>
+    <form id="feedback-form">
+      <textarea id="review_text" rows="4" style="width:100%;" placeholder="Por favor, cuéntanos qué sucedió..." required></textarea>
+      <button type="submit" class="btn" style="margin-top: 10px;">Enviar Comentario Interno</button>
+    </form>
+
+    <!-- DIRECTIVA 2: Vía de Escape Pública (Anti-Review Gating) -->
+    <div class="escape-link">
+      <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
+        ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
+      </a>
+    </div>
+
+    <!-- DIRECTIVA 3: Bloque Legal Estricto RGPD (Primera Capa) -->
+    <div class="legal-notice">
+      <strong>Protección de Datos:</strong> Esta encuesta es 100% anónima. La información recopilada se utiliza exclusivamente para el control interno de calidad del servicio. No se almacenan ni procesan datos de carácter personal.
+    </div>
   </div>
 
-  <div id="thankYou" class="hidden">
-    <h3>¡Gracias por tus comentarios!</h3>
-    <p>Hemos notificado a la gerencia para tomar acciones de inmediato.</p>
-  </div>
-
-  <div class="legal-disclaimer">
-    <strong>Protección de Datos (RGPD):</strong> La información recopilada se utiliza exclusivamente para la gestión interna de calidad del servicio. Al interactuar con esta plataforma, aceptas el procesamiento privado de tus comentarios conforme a la normativa europea de protección de datos.
-  </div>
-</div>
-
-<script>
-  const WEBHOOK_URL = 'http://localhost:5678/webhook/evaluacion-restaurante'; 
-  const GOOGLE_MAPS_URL = 'https://g.page/r/Cep4LmYOLkn9EBM/review'; 
-  const DESTINATION_EMAILS = ["yair.fran15@gmail.com"];
-
-  let selectedRating = 0;
-  const stars = document.querySelectorAll('.star');
-  const feedbackForm = document.getElementById('feedbackForm');
-  const thankYou = document.getElementById('thankYou');
-
-  stars.forEach(star => {
-    star.addEventListener('click', () => {
-      selectedRating = parseInt(star.getAttribute('data-value'));
-      
-      stars.forEach(s => {
-        s.classList.toggle('active', parseInt(s.getAttribute('data-value')) <= selectedRating);
-      });
-
-      if (selectedRating >= 4) {
-        window.location.href = GOOGLE_MAPS_URL;
-      } else {
-        feedbackForm.classList.remove('hidden');
-      }
-    });
-  });
-
-  document.getElementById('sendBtn').addEventListener('click', () => {
-    const comment = document.getElementById('comments').value;
-    if (!comment.trim()) return alert('Por favor, escribe un comentario.');
-
-    const payload = {
-      nombre_cliente: "Restaurante BOK2",
-      email_destino: DESTINATION_EMAILS,
-      resenas: [comment]
+  <script>
+    // Configuración por cliente (Inyectada dinámicamente o por URL query params)
+    const CONFIG = {
+      sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
+      business_name: "Restaurante BOK2",
+      google_maps_url: "https://maps.google.com/?cid=YOUR_GOOGLE_BUSINESS_ID",
+      webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
-    fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: {
-  'Content-Type': 'application/json',
-  'X-API-KEY': 'BOK2_Secret_Token_2026_x99'
-},
-      body: JSON.stringify(payload)
-    }).catch(err => console.error('Error enviando al webhook:', err));
+    let selectedRating = 0;
+    document.getElementById('google-escape-url').href = CONFIG.google_maps_url;
 
-    feedbackForm.classList.add('hidden');
-    document.getElementById('starContainer').classList.add('hidden');
-    thankYou.classList.remove('hidden');
-  });
-</script>
+    document.querySelectorAll('#star-container span').forEach(star => {
+      star.addEventListener('click', (e) => {
+        selectedRating = parseInt(e.target.dataset.value);
+        if (selectedRating >= 4) {
+          // 4-5 estrellas: Redirección directa e inmediata a Google Maps
+          window.location.href = CONFIG.google_maps_url;
+        } else {
+          // 1-3 estrellas: Formulario interno con vía de escape pública visible
+          document.getElementById('rating-step').classList.add('hidden');
+          document.getElementById('internal-form').classList.remove('hidden');
+        }
+      });
+    });
 
+    document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const reviewText = document.getElementById('review_text').value;
+
+      await fetch(CONFIG.webhook_url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-KEY': 'PymeSinc_Secret_Key_2026_SecureKey150198'
+        },
+        body: JSON.stringify({
+          sheet_id: CONFIG.sheet_id,
+          business_name: CONFIG.business_name,
+          rating: selectedRating,
+          review_text: reviewText
+        })
+      });
+
+      alert('Gracias por sus comentarios. Nos ayudan a mejorar.');
+      location.reload();
+    });
+  </script>
 </body>
 </html>
