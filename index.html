@@ -96,7 +96,7 @@
         <button type="submit" class="btn">Enviar Comentario Interno</button>
       </form>
 
-      <!-- Vía de Escape Pública (Anti-Review Gating / Cumplimiento de Políticas) -->
+      <!-- Vía de Escape Pública (Anti-Review Gating) -->
       <div class="escape-link">
         <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
           ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
@@ -114,8 +114,8 @@
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      // URL directa con el Place ID oficial extraído para BOK2
-      google_review_url: "https://search.google.com/local/writereview?placeid=ChIJ4RgoNAmZpBIR6nguZg4uSf0",
+      // URL directa a la ficha nativa de Google Maps para forzar apertura en entorno de Maps
+      google_review_url: "https://www.google.com/maps/place/?q=place_id:ChIJ4RgoNAmZpBIR6nguZg4uSf0",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
@@ -128,7 +128,7 @@
         selectedRating = parseInt(e.target.dataset.value);
 
         if (selectedRating >= 4) {
-          // Redirección directa sin fricción a la ventana de reseña en Google Maps
+          // Redirección directa al entorno nativo de Google Maps usando el Place ID
           window.location.href = CONFIG.google_review_url;
         } else {
           // Muestra el formulario de feedback interno
