@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Evaluación de Servicio</title>
+  <title>Evaluación de Servicio - BOK2</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; color: #333; }
     .hidden { display: none; }
-    .stars { display: flex; gap: 8px; font-size: 2rem; cursor: pointer; margin: 1rem 0; }
-    .btn { background: #0056b3; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 1rem; }
+    .stars { display: flex; gap: 12px; font-size: 2.5rem; cursor: pointer; margin: 1.5rem 0; justify-content: center; }
+    .star { color: #d1d5db; transition: color 0.15s ease-in-out; }
+    .star:hover, .star.active { color: #f59e0b; }
+    .btn { background: #0056b3; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: 600; }
     .escape-link { margin-top: 1.5rem; text-align: center; font-size: 0.9rem; }
     .escape-link a { color: #d93025; font-weight: bold; text-decoration: underline; }
     .legal-notice { font-size: 0.75rem; color: #666; margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1rem; text-align: justify; }
@@ -16,15 +18,15 @@
 </head>
 <body>
 
-  <h2>Evalúa tu experiencia</h2>
-  <div id="rating-step">
+  <div id="rating-step" style="text-align: center;">
+    <h2>Evalúa tu experiencia</h2>
     <p>¿Cómo calificarías tu atención hoy?</p>
     <div class="stars" id="star-container">
-      <span data-value="1">★</span>
-      <span data-value="2">★</span>
-      <span data-value="3">★</span>
-      <span data-value="4">★</span>
-      <span data-value="5">★</span>
+      <span class="star" data-value="1">★</span>
+      <span class="star" data-value="2">★</span>
+      <span class="star" data-value="3">★</span>
+      <span class="star" data-value="4">★</span>
+      <span class="star" data-value="5">★</span>
     </div>
   </div>
 
@@ -32,7 +34,7 @@
   <div id="internal-form" class="hidden">
     <h3>Queremos mejorar nuestro servicio</h3>
     <form id="feedback-form">
-      <textarea id="review_text" rows="4" style="width:100%;" placeholder="Por favor, cuéntanos qué sucedió..." required></textarea>
+      <textarea id="review_text" rows="4" style="width:100%; box-sizing: border-box; padding: 10px;" placeholder="Por favor, cuéntanos qué sucedió..." required></textarea>
       <button type="submit" class="btn" style="margin-top: 10px;">Enviar Comentario Interno</button>
     </form>
 
@@ -43,32 +45,33 @@
       </a>
     </div>
 
-    <!-- DIRECTIVA 3: Bloque Legal Estricto RGPD (Primera Capa) -->
+    <!-- DIRECTIVA 3: Bloque Legal Estricto RGPD -->
     <div class="legal-notice">
       <strong>Protección de Datos:</strong> Esta encuesta es 100% anónima. La información recopilada se utiliza exclusivamente para el control interno de calidad del servicio. No se almacenan ni procesan datos de carácter personal.
     </div>
   </div>
 
   <script>
-    // Configuración por cliente (Inyectada dinámicamente o por URL query params)
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      google_maps_url: "https://maps.google.com/?cid=YOUR_GOOGLE_BUSINESS_ID",
+      google_review_url: "https://search.google.com/local/writereview?ludocid=18251169604274387178",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
     let selectedRating = 0;
-    document.getElementById('google-escape-url').href = CONFIG.google_maps_url;
+    const escapeLink = document.getElementById('google-escape-url');
+    if (escapeLink) escapeLink.href = CONFIG.google_review_url;
 
-    document.querySelectorAll('#star-container span').forEach(star => {
+    document.querySelectorAll('#star-container .star').forEach(star => {
       star.addEventListener('click', (e) => {
         selectedRating = parseInt(e.target.dataset.value);
+
         if (selectedRating >= 4) {
-          // 4-5 estrellas: Redirección directa e inmediata a Google Maps
-          window.location.href = CONFIG.google_maps_url;
+          // 4 y 5 estrellas: Redirección inmediata al pop-up oficial de reseña de BOK2
+          window.location.href = CONFIG.google_review_url;
         } else {
-          // 1-3 estrellas: Formulario interno con vía de escape pública visible
+          // 1 a 3 estrellas: Muestra el formulario interno
           document.getElementById('rating-step').classList.add('hidden');
           document.getElementById('internal-form').classList.remove('hidden');
         }
