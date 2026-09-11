@@ -114,8 +114,8 @@
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      // Endpoint oficial de Google que despliega el modal interactivo de reseña directamente
-      google_review_url: "https://search.google.com/local/writereview?placeid=ChIJ4RgoNAmZpBIR6nguZg4uSf0",
+      // URL estructurada nativamente en Google Maps con el Place ID y parámetros de apertura de reseñas
+      google_review_url: "https://www.google.com/maps/place/BOK2/@41.3858755,2.1360536,17z/data=!4m8!3m7!1sChIJ4RgoNAmZpBIR6nguZg4uSf0!8m2!3d41.3858755!4d2.1386285!9m1!1b1",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
@@ -128,7 +128,7 @@
         selectedRating = parseInt(e.target.dataset.value);
 
         if (selectedRating >= 4) {
-          // Redirección directa al modal de redacción de reseña
+          // Redirección directa al entorno de Google Maps con la ficha y opiniones desplegadas
           window.location.href = CONFIG.google_review_url;
         } else {
           // Muestra el formulario de feedback interno
