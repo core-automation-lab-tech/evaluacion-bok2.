@@ -58,7 +58,7 @@
       transition: background-color 0.2s ease;
     }
     .btn:hover { background-color: #2ea043; }
-    .btn:disabled { background-color: #21262d; color: #8b949e; cursor: not-allowed; }
+    .btn:disabled { background-color: #30363d; color: #8b949e; cursor: not-allowed; }
     .escape-link { margin-top: 1.5rem; font-size: 0.85rem; }
     .escape-link a { color: #58a6ff; text-decoration: underline; font-weight: 500; }
     .legal-notice {
@@ -97,7 +97,7 @@
         <button type="submit" id="submit-btn" class="btn">Enviar Comentario Interno</button>
       </form>
 
-      <!-- Vía de Escape Pública (Anti-Review Gating - Normativa Google) -->
+      <!-- Vía de Escape Pública (Anti-Review Gating) -->
       <div class="escape-link">
         <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
           ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
@@ -115,7 +115,7 @@
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      // Endpoint oficial de Google Search/Maps para forzar la apertura directa del modal de reseña
+      // Endpoint oficial de Intent Directo exigido por el auditor
       google_review_url: "https://search.google.com/local/writereview?placeid=ChIJ4RgoNAmZpBIR6nguZg4uSf0",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
@@ -129,10 +129,10 @@
         selectedRating = parseInt(e.target.dataset.value);
 
         if (selectedRating >= 4) {
-          // Redirección inmediata a la ventana flotante de Google Reviews
+          // Activación directa del endpoint de intent oficial para apertura nativa/modal
           window.location.href = CONFIG.google_review_url;
         } else {
-          // Muestra formulario interno para feedback bajo
+          // Despliegue del formulario interno para bajas valoraciones
           document.getElementById('rating-step').classList.add('hidden');
           document.getElementById('internal-form').classList.remove('hidden');
         }
@@ -144,6 +144,7 @@
       const submitBtn = document.getElementById('submit-btn');
       const reviewText = document.getElementById('review_text').value;
 
+      // Control robusto de UI en llamadas asíncronas
       submitBtn.disabled = true;
       submitBtn.textContent = 'Enviando...';
 
@@ -162,12 +163,13 @@
           })
         });
 
-        if (!response.ok) throw new Error('Error en la red');
+        if (!response.ok) throw new Error('Fallo en la respuesta del webhook');
 
         alert('Gracias por tus comentarios. Nos ayudan a mejorar.');
         location.reload();
       } catch (error) {
-        alert('Ocurrió un error al enviar el comentario. Inténtalo de nuevo.');
+        console.error('Error de sincronización:', error);
+        alert('Hubo un error al enviar tu comentario. Por favor, inténtalo de nuevo.');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Enviar Comentario Interno';
       }
