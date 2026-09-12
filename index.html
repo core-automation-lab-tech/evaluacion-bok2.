@@ -58,6 +58,7 @@
       transition: background-color 0.2s ease;
     }
     .btn:hover { background-color: #2ea043; }
+    .btn:disabled { background-color: #21262d; color: #8b949e; cursor: not-allowed; }
     .escape-link { margin-top: 1.5rem; font-size: 0.85rem; }
     .escape-link a { color: #58a6ff; text-decoration: underline; font-weight: 500; }
     .legal-notice {
@@ -93,10 +94,10 @@
       <p class="subtitle">Cuéntanos qué sucedió para corregirlo de inmediato.</p>
       <form id="feedback-form">
         <textarea id="review_text" rows="4" placeholder="Escribe tu comentario aquí..." required></textarea>
-        <button type="submit" class="btn">Enviar Comentario Interno</button>
+        <button type="submit" id="submit-btn" class="btn">Enviar Comentario Interno</button>
       </form>
 
-      <!-- Vía de Escape Pública (Anti-Review Gating) -->
+      <!-- Vía de Escape Pública (Anti-Review Gating - Normativa Google) -->
       <div class="escape-link">
         <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
           ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
@@ -114,8 +115,8 @@
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      // URL estructurada nativamente en Google Maps con el Place ID y parámetros de apertura de reseñas
-      google_review_url: "https://www.google.com/maps/place/BOK2/@41.3858755,2.1360536,17z/data=!4m8!3m7!1sChIJ4RgoNAmZpBIR6nguZg4uSf0!8m2!3d41.3858755!4d2.1386285!9m1!1b1",
+      // Endpoint oficial de Google Search/Maps para forzar la apertura directa del modal de reseña
+      google_review_url: "https://search.google.com/local/writereview?placeid=ChIJ4RgoNAmZpBIR6nguZg4uSf0",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
@@ -128,10 +129,10 @@
         selectedRating = parseInt(e.target.dataset.value);
 
         if (selectedRating >= 4) {
-          // Redirección directa al entorno de Google Maps con la ficha y opiniones desplegadas
+          // Redirección inmediata a la ventana flotante de Google Reviews
           window.location.href = CONFIG.google_review_url;
         } else {
-          // Muestra el formulario de feedback interno
+          // Muestra formulario interno para feedback bajo
           document.getElementById('rating-step').classList.add('hidden');
           document.getElementById('internal-form').classList.remove('hidden');
         }
@@ -140,24 +141,36 @@
 
     document.getElementById('feedback-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const submitBtn = document.getElementById('submit-btn');
       const reviewText = document.getElementById('review_text').value;
 
-      await fetch(CONFIG.webhook_url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-KEY': 'PymeSinc_Secret_Key_2026_SecureKey150198'
-        },
-        body: JSON.stringify({
-          sheet_id: CONFIG.sheet_id,
-          business_name: CONFIG.business_name,
-          rating: selectedRating,
-          review_text: reviewText
-        })
-      });
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
 
-      alert('Gracias por tus comentarios. Nos ayudan a mejorar.');
-      location.reload();
+      try {
+        const response = await fetch(CONFIG.webhook_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-KEY': 'PymeSinc_Secret_Key_2026_SecureKey150198'
+          },
+          body: JSON.stringify({
+            sheet_id: CONFIG.sheet_id,
+            business_name: CONFIG.business_name,
+            rating: selectedRating,
+            review_text: reviewText
+          })
+        });
+
+        if (!response.ok) throw new Error('Error en la red');
+
+        alert('Gracias por tus comentarios. Nos ayudan a mejorar.');
+        location.reload();
+      } catch (error) {
+        alert('Ocurrió un error al enviar el comentario. Inténtalo de nuevo.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Comentario Interno';
+      }
     });
   </script>
 </body>
