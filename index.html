@@ -97,7 +97,7 @@
         <button type="submit" id="submit-btn" class="btn">Enviar Comentario Interno</button>
       </form>
 
-      <!-- Vía de Escape Pública (Anti-Review Gating) -->
+      <!-- Vía de Escape Pública -->
       <div class="escape-link">
         <a id="google-escape-url" href="#" target="_blank" rel="noopener noreferrer">
           ¿Prefieres publicar tu opinión directamente en Google Maps? Haz clic aquí.
@@ -105,7 +105,7 @@
       </div>
     </div>
 
-    <!-- Cláusula de Protección de Datos RGPD (Primera Capa) -->
+    <!-- Cláusula de Protección de Datos RGPD -->
     <div class="legal-notice">
       <strong>Protección de Datos:</strong> Esta encuesta es 100% anónima. La información recopilada se utiliza exclusivamente para el control interno de calidad del servicio. No se almacenan ni procesan datos de carácter personal.
     </div>
@@ -115,8 +115,8 @@
     const CONFIG = {
       sheet_id: "1Bi2JQV1acd6LIZIj6TDIGM7CgtLrYgMQKJoDXGXozL0",
       business_name: "Restaurante BOK2",
-      // Endpoint oficial de Intent Directo exigido por el auditor
-      google_review_url: "https://search.google.com/local/writereview?placeid=ChIJ4RgoNAmZpBIR6nguZg4uSf0",
+      // Enlace corto oficial de Google Business Profile para BOK2
+      google_review_url: "https://g.page/r/Cep4LmYOLkn9EBM/review",
       webhook_url: "https://n8n.pymesinc.com/webhook/evaluacion-restaurante"
     };
 
@@ -129,7 +129,7 @@
         selectedRating = parseInt(e.target.dataset.value);
 
         if (selectedRating >= 4) {
-          // Activación directa del endpoint de intent oficial para apertura nativa/modal
+          // Apertura mediante enlace corto oficial (Google Maps / Modal Nativo)
           window.location.href = CONFIG.google_review_url;
         } else {
           // Despliegue del formulario interno para bajas valoraciones
@@ -144,7 +144,6 @@
       const submitBtn = document.getElementById('submit-btn');
       const reviewText = document.getElementById('review_text').value;
 
-      // Control robusto de UI en llamadas asíncronas
       submitBtn.disabled = true;
       submitBtn.textContent = 'Enviando...';
 
